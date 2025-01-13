@@ -1,5 +1,6 @@
 package com.java24.bookshop.controllers;
 
+import com.java24.bookshop.models.Author;
 import com.java24.bookshop.models.Book;
 import com.java24.bookshop.repositories.AuthorRepository;
 import com.java24.bookshop.repositories.BookRepository;
@@ -54,26 +55,44 @@ public class BookController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable String id, @RequestBody Book bookDetails) {
-        Book existingBook = bookRepository.findById(id)
+    public ResponseEntity<Book> updateBook(@PathVariable String id,@Valid @RequestBody Book book) {
+        if(!bookRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found");
+        }
+        if(book.getAuthor() != null ) {
+            Author author = authorRepository.findById(book.getAuthor().getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Author not found"));
+            book.setAuthor(author);
+        }
+
+        if(book.getCoAuthor() != null ) {
+            Author coAuthor = authorRepository.findById(book.getCoAuthor().getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "CoAuthor not found"));
+            book.setCoAuthor(coAuthor);
+        }
+
+
+
+/// GAMLA; KOLLA HELAS REPO FÖR HENNES HELA METOD
+        Book updatedBook = bookRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found"));
 
         // uppdatera egenskaper
-        existingBook.setTitle(bookDetails.getTitle());
-        existingBook.setPages(bookDetails.getPages());
-        existingBook.setDescription(bookDetails.getDescription());
-        existingBook.setIsbn(bookDetails.getIsbn());
-        existingBook.setPriceExVat(bookDetails.getPriceExVat());
-        existingBook.setBookCoverUrl(bookDetails.getBookCoverUrl());
-        existingBook.setAuthor(bookDetails.getAuthor());
-        existingBook.setCoAuthor(bookDetails.getCoAuthor());
+        updatedBook.setTitle(book.getTitle());
+        updatedBook.setPages(book.getPages());
+        updatedBook.setDescription(book.getDescription());
+        updatedBook.setIsbn(book.getIsbn());
+        updatedBook.setPriceExVat(book.getPriceExVat());
+        updatedBook.setBookCoverUrl(book.getBookCoverUrl());
+        updatedBook.setAuthor(book.getAuthor());
+        updatedBook.setCoAuthor(book.getCoAuthor());
 
-        return ResponseEntity.ok(bookRepository.save(existingBook));
+        return ResponseEntity.ok(bookRepository.save(updatedBook));
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Book> deleteBook(@PathVariable String id) {
+    public ResponseEntity<Void> deleteBook(@PathVariable String id) {
         if (!bookRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found");
         }

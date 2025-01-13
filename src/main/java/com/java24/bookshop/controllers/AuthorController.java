@@ -50,7 +50,7 @@ public class AuthorController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Author> deleteAuthor(@PathVariable String id) {
+    public ResponseEntity<Void> deleteAuthor(@PathVariable String id) {
         if (!authorRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Author not found");
         }
