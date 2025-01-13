@@ -3,6 +3,7 @@ package com.java24.bookshop.controllers;
 import com.java24.bookshop.models.Book;
 import com.java24.bookshop.repositories.AuthorRepository;
 import com.java24.bookshop.repositories.BookRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class BookController {
     private AuthorRepository authorRepository;
 
     @PostMapping
-    public ResponseEntity<Book> createBook(@RequestBody Book book) {
+    public ResponseEntity<Book> createBook(@Valid @RequestBody Book book) {
         // om author fylls i - kolla att den finns i databasen
         if(book.getAuthor() != null && !authorRepository.existsById(book.getAuthor().getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Author not found");
