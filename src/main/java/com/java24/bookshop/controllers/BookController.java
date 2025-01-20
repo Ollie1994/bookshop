@@ -73,7 +73,7 @@ public class BookController {
 
 
 
-/// GAMLA; KOLLA HELAS REPO FÖR HENNES HELA METOD
+/// GAMLA; KOLLA HELENAS REPO FÖR HENNES HELA METOD
         Book updatedBook = bookRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found"));
 
